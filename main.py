@@ -1,6 +1,7 @@
 import base64
 from datetime import datetime
 import json
+import os
 from pathlib import Path
 import random
 from urllib.parse import urljoin
@@ -13,7 +14,7 @@ import dash_bootstrap_components as dbc
 
 import requests
 
-API = 'http://127.0.0.1:8000'
+API = os.environ['API_URL'] # 'http://127.0.0.1:8000' 
 api_upload_image = '/send_img/'
 api_get_classes = '/get_train_classes/'
 api_get_pred_imgs = '/send_nearest_imgs/'
