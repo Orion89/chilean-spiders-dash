@@ -45,18 +45,28 @@ app.layout = dbc.Container(
                     dcc.Upload(
                         id='pic-upload-1',
                         children=[
+                            # dbc.Card(
+                            #     dbc.CardLink(
+                            #         'Arrastra la fotografía acá o haz click para seleciconar el archivo',
+                            #         href='#'
+                            #     )
+                            # )
                             html.Div(
                                 [
-                                    html.P(
-                                        [
-                                            # "Arrastra la fotografía acá o ",
-                                            html.A('Arrastra la fotografía acá o haz click para seleciconar el archivo')
-                                        ]
+                                    # "Arrastra la fotografía acá o ",
+                                    html.A(
+                                        'Arrastra la fotografía acá o haz click para seleciconar el archivo',
+                                        # className='text-nowrap',
+                                        style={
+                                            'overflowWrap': 'break-word',
+                                            'cursor': 'pointer'
+                                            # 'wordBreak': 'break-word'
+                                        }
                                     )
-                                ]
+                                ]        
                             )
                         ],
-                        multiple=False
+                        multiple=False,
                     ),
                     style={
                         'width': '90%',
@@ -68,9 +78,18 @@ app.layout = dbc.Container(
                         'textAlign': 'center',
                         'margin': '10px'
                     },
-                    width={'size': 10, 'offset': 1}
+                    width={'size': 10, 'offset': 2},
+                    md={
+                        'size': 10,
+                        'offset': 2
+                    },
+                    xs={
+                        'size': 12,
+                        'offset': 0
+                    }
                 )
-            ]
+            ],
+            justify='center'
         ),
         dbc.Row(
             [
@@ -145,7 +164,7 @@ app.layout = dbc.Container(
                                                 "Todos los créditos al equipo de Arañas de Chile detallado en la parte inferior del afiche.", className='card-text'),
                                             dcc.Store(id='imgs-idx-store') # html.P(id='imgs-idxs', className='invisible')
                                         ],
-                                        className='m-2'
+                                        className='mt-2 mb-1'
                                     )
                                         ]
                                     ),
@@ -169,13 +188,13 @@ app.layout = dbc.Container(
                         'order': 2 # first'
                     },
                     sm={
-                        'size': 10,
-                        'offset': 1,
+                        'size': 12,
+                        'offset': 0,
                         'order': 'first'
                     },
                     xs={
-                        'size': 10,
-                        'offset': 1,
+                        'size': 12,
+                        'offset': 0,
                         'order': 'first'
                     }
                 ),
@@ -543,4 +562,4 @@ def get_nearest_imgs(timestamp, data):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=False, port="9000")
+    app.run_server(debug=True, port="9000")
