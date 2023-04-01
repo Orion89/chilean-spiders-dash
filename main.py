@@ -562,4 +562,4 @@ def get_nearest_imgs(timestamp, data):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port="9000")
+    app.run_server(debug=False, port="9000")
