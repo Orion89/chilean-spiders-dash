@@ -47,8 +47,12 @@ app.layout = dbc.Container(
                         children=[
                             html.Div(
                                 [
-                                    "Arrastra la fotografía acá o ",
-                                    html.A('haz click para seleciconar el archivo')
+                                    html.P(
+                                        [
+                                            # "Arrastra la fotografía acá o ",
+                                            html.A('Arrastra la fotografía acá o haz click para seleciconar el archivo')
+                                        ]
+                                    )
                                 ]
                             )
                         ],
@@ -56,7 +60,7 @@ app.layout = dbc.Container(
                     ),
                     style={
                         'width': '90%',
-                        'height': '80px',
+                        'height': '90px',
                         'lineHeight': '60px',
                         'borderWidth': '2px',
                         'borderStyle': 'dashed',
@@ -64,7 +68,7 @@ app.layout = dbc.Container(
                         'textAlign': 'center',
                         'margin': '10px'
                     },
-                    width={'size': 8, 'offset': 2}
+                    width={'size': 10, 'offset': 1}
                 )
             ]
         ),
@@ -90,7 +94,28 @@ app.layout = dbc.Container(
                             class_name='m-1 invisible'
                         ),
                     ],
-                    width={'size': 2, 'offset': 0}
+                    width={'size': 2, 'offset': 0},
+                    lg={
+                        'size': 2,
+                        'offset': 0,
+                        # 'order': 'first'
+                    },
+                    md={
+                        'size': 2,
+                        'offset': 0,
+                        'order': 'first' # '2'
+                    },
+                    sm={
+                        'size': 8,
+                        'offset': 2,
+                        'order': '2'
+                    },
+                    xs={
+                        'size': 8,
+                        'offset': 2,
+                        'order': '2'
+                    }
+                    
                 ),
                 dbc.Col(
                     html.Div(
@@ -132,7 +157,27 @@ app.layout = dbc.Container(
                         ],
                         className='m-1 primary'
                     ),
-                    width={'size': 8, 'offset': 0}
+                    width={'size': 8, 'offset': 0},
+                    lg={
+                        'size': 8,
+                        'offset': 0,
+                        # 'order': 'first'
+                    },
+                    md={
+                        'size': 8,
+                        'offset': 0,
+                        'order': 2 # first'
+                    },
+                    sm={
+                        'size': 10,
+                        'offset': 1,
+                        'order': 'first'
+                    },
+                    xs={
+                        'size': 10,
+                        'offset': 1,
+                        'order': 'first'
+                    }
                 ),
                 dbc.Col(
                     [
@@ -149,7 +194,27 @@ app.layout = dbc.Container(
                             color='warning',
                             class_name='invisible'
                         )
-                    ]
+                    ],
+                    lg={
+                        'size': 2,
+                        'offset': 0,
+                        # 'order': 'last'
+                    },
+                    md={
+                        'size': 2,
+                        'offset': 0,
+                        'order': 'last'
+                    },
+                    sm={
+                        'size': 8,
+                        'offset': 2,
+                        'order': 'last'
+                    },
+                    xs={
+                        'size': 8,
+                        'offset': 2,
+                        'order': 'last'
+                    }
                 )
             ]
         ),
@@ -177,7 +242,22 @@ app.layout = dbc.Container(
                         ],
                         className='m-2 mt-2 shadow-sm'
                     ),
-                    width={'size': 4}
+                    width={'size': 4},
+                    md={
+                        'size': 3,
+                        'offset': 1,
+                        'order': 'first'
+                    },
+                    sm={
+                        'size': 10,
+                        'offset': 1,
+                        'order': 'first'
+                    },
+                    xs={
+                        'size': 10,
+                        'offset': 1,
+                        'order': 'first'
+                    }
                 ),
                 dbc.Col(
                     dbc.Card(
@@ -193,7 +273,22 @@ app.layout = dbc.Container(
                         className='m-2 mt-2 shadow-sm'
                     
                     ),
-                    width={'size': 4}
+                    width={'size': 4},
+                    md={
+                        'size': 4,
+                        'offset': 0,
+                        'order': 2
+                    },
+                    sm={
+                        'size': 10,
+                        'offset': 1,
+                        'order': 2
+                    },
+                    xs={
+                        'size': 10,
+                        'offset': 1,
+                        'order': 2
+                    }
                 ),
                 dbc.Col(
                     [
@@ -223,7 +318,22 @@ app.layout = dbc.Container(
                             ],
                             className='m-2 mt-2 shadow-sm'
                         )
-                    ]
+                    ],
+                    md={
+                        'size': 3,
+                        'offset': 0,
+                        'order': 'last'
+                    },
+                    sm={
+                        'size': 10,
+                        'offset': 1,
+                        'order': 'last'
+                    },
+                    xs={
+                        'size': 10,
+                        'offset': 1,
+                        'order': 'last'
+                    }
                 )
             ]
         ),
@@ -234,7 +344,7 @@ app.layout = dbc.Container(
                         dbc.Card(
                             [
                                 dbc.CardFooter(
-                                    html.P("2023 Lenardo Molina")
+                                    html.P("2023 Leonardo Molina")
                                 )
                             ],
                         )
@@ -246,6 +356,7 @@ app.layout = dbc.Container(
             class_name='text-end'
         )
     ],
+    fluid=True
 )
 
 
