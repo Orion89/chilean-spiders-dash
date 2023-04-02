@@ -106,7 +106,7 @@ app.layout = dbc.Container(
                                     class_name='m-1 shadow-sm'
                                 ),
                                 dbc.CardFooter(
-                                    html.P('Créditos de las fotografías a quien corresponda.', className='card-text shadow-sm')
+                                    html.P('Créditos de las fotografías a quien corresponda.', className='card-text')
                                 )
                             ],
                             id='img-container-1',
@@ -202,17 +202,34 @@ app.layout = dbc.Container(
                     [
                         dbc.Card(
                             [
-                               dbc.CardHeader(html.H4('Atención', className='card-title')),
+                               dbc.CardHeader(html.H4('¡Paciencia!',
+                                                      id='warning-title',
+                                                      className='card-title text-center')),
                                dbc.CardBody(
                                    [
-                                       html.P('La clasificación puede ser desacertada. Considerar con precaución.', className='card-text')
+                                       html.P('Puede que la primera predicción cuando se entra al sitio tarde varios segundos.',
+                                              id='warning-text',
+                                              className='card-text')
                                    ]
                                ) 
                             ],
                             id='warning-msg',
                             color='warning',
-                            class_name='invisible'
-                        )
+                            class_name='m-1 shadow-sm'
+                        ),
+                        # dbc.Card(
+                        #     [
+                        #        dbc.CardHeader(html.H4('¡Paciencia!', className='card-title text-center')),
+                        #        dbc.CardBody(
+                        #            [
+                        #                html.P('Puede que la primera predicción cuando se entra al sitio tarde varios segundos.', className='card-text')
+                        #            ]
+                        #        ) 
+                        #     ],
+                        #     id='wait-msg',
+                        #     color='warning',
+                        #     class_name='m-1 shadow-sm'
+                        # )
                     ],
                     lg={
                         'size': 2,
@@ -387,6 +404,7 @@ app.layout = dbc.Container(
 def send_image(contents):
     if contents is not None:
         content_type, content_string = contents.split(',')
+        n_neighbors = 1
         print(content_type)
         try:
             if 'jpeg' in content_type:
@@ -394,7 +412,7 @@ def send_image(contents):
                 files = {'file': decoded}
                 response = requests.post(urljoin(API, api_upload_image), files=files)
                 response_dict = json.loads(response.text)
-                nearest_neighbors = ', '.join([name for name in response_dict['nearest_neighbors'][:3]])
+                nearest_neighbors = ', '.join([name for name in response_dict['nearest_neighbors'][:n_neighbors]])
                 # pred_style={
                 #         'width': '90%',
                 #         'height': '70px',
@@ -413,6 +431,9 @@ def send_image(contents):
     else:
         return 'Afiche aleatorio', '', '', None
         
+
+about_classifications_text = 'Tener presente que la clasificación puede ser desacertada. Considerar con precaución.'
+about_classifications_title = 'Es importante' 
     
 @app.callback(Output('info-img', 'src'),
               Input('cls-predictions', 'children'))
@@ -544,7 +565,8 @@ def refresh_infographic(predictions):
 @app.callback(Output('img-1', 'src'),
               Output('img-2', 'src'),
               Output('img-container-1', 'class_name'),
-              Output('warning-msg', 'class_name'),
+              Output('warning-title', 'children'),
+              Output('warning-text', 'children'),
               Input('imgs-idx-store', 'modified_timestamp'),
               State('imgs-idx-store', 'data'))
 def get_nearest_imgs(timestamp, data):
@@ -556,9 +578,9 @@ def get_nearest_imgs(timestamp, data):
             img_decoded = 'data:image/png;base64,' + base64.b64encode(response.content).decode('utf-8')
             nearest_imgs_list.append(img_decoded)
         # print(response.content)
-        return nearest_imgs_list[0], nearest_imgs_list[1], 'm-1 visible', 'm-1 visible shadow-sm'
+        return nearest_imgs_list[0], nearest_imgs_list[1], 'm-1 visible shadow-sm', about_classifications_title, about_classifications_text
     else:
-        return no_update, no_update, no_update, no_update 
+        return no_update, no_update, no_update, no_update, no_update 
 
 
 if __name__ == "__main__":
