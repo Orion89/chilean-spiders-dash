@@ -34,10 +34,21 @@ app.layout = dbc.Container(
     [
         dbc.Row(
             dbc.Col(
-                html.H1("Arañas de Chile", className='fw-bolder text-center'),
+                html.H1("¿Qué araña es?", className='fw-bolder text-center'),
                 width=12
             ),
-            className='m-3'
+            className='m-2'
+        ),
+        dbc.Row(
+            dbc.Col(
+                [
+                    html.H2(
+                        "Identificador de arácnidos de Chile",
+                        className='fw-bolder text-center'
+                    )
+                ],
+                width=12
+            )
         ),
         dbc.Row(
             [
@@ -67,6 +78,8 @@ app.layout = dbc.Container(
                             )
                         ],
                         multiple=False,
+                        accept='image/*',
+                        max_size=4e7
                     ),
                     style={
                         'width': '90%',
@@ -99,11 +112,11 @@ app.layout = dbc.Container(
                             [
                                 dbc.CardImg(
                                     id='img-1',
-                                    class_name='m-1 shadow-sm'
+                                    class_name='m-1 p-1 shadow-sm'
                                 ),
                                 dbc.CardImg(
                                     id='img-2',
-                                    class_name='m-1 shadow-sm'
+                                    class_name='m-1 p-1 shadow-sm'
                                 ),
                                 dbc.CardFooter(
                                     html.P('Créditos de las fotografías a quien corresponda.', className='card-text')
@@ -150,10 +163,10 @@ app.layout = dbc.Container(
                                         ),
                                     dbc.CardBody(
                                         [
-                                             html.P(
-                                                id="cls-predictions",
-                                                className='fw-bolder'
-                                            ),
+                                            #  html.P(
+                                            #     id="cls-predictions",
+                                            #     className='fw-bolder'
+                                            # ),
                                             dbc.CardImg(
                                             src="/static/afiches/familia_salticidae.jpg",
                                             id='info-img'
@@ -397,7 +410,7 @@ app.layout = dbc.Container(
 
 
 @app.callback(Output('info-img-title', 'children'),
-              Output('cls-predictions', 'children'),
+              # Output('cls-predictions', 'children'),
               Output('main-card', 'className'),
               Output('imgs-idx-store', 'data'),
               Input('pic-upload-1', 'contents'))
@@ -424,23 +437,23 @@ def send_image(contents):
                 #         'textAlign': 'center',
                 #         'margin': '10px'
                 #     }
-                return 'Posibles clases:', nearest_neighbors, 'bg-success', response_dict['nearest_imgs_idx']
+                return 'Sugerencia de clase: ' + nearest_neighbors, 'bg-success', response_dict['nearest_imgs_idx']
         except Exception as e:
             print(e)
-            return "Hubo un problema al procesar la imagen, vuelve a intentar con un archivo de imagen válido.", '', '', None
+            return "Hubo un problema al procesar la imagen, vuelve a intentar con un archivo de imagen válido.", '', None
     else:
-        return 'Afiche aleatorio', '', '', None
+        return 'Afiche aleatorio', '', None
         
 
 about_classifications_text = 'Tener presente que la clasificación puede ser desacertada. Considerar con precaución.'
 about_classifications_title = 'Es importante' 
     
 @app.callback(Output('info-img', 'src'),
-              Input('cls-predictions', 'children'))
+              Input('info-img-title', 'children')) # Input('cls-predictions', 'children')
 def refresh_infographic(predictions):
     random_img = random.choice(list(infographics_path.glob('*.jpg')))
-    first_pred = predictions.partition(', ')[0]
-    if predictions:
+    first_pred = predictions.partition(': ')[2]
+    if 'Sugerencia' in predictions:
         if first_pred == 'acanthogonatus sp':
             return (str(infographics_path / 'genero_acanthogonatus.jpg'))
         
