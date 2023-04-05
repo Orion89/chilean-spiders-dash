@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import random
 from urllib.parse import urljoin
+from utils import utils
 
 import plotly
 import dash
@@ -230,6 +231,17 @@ app.layout = dbc.Container(
                             color='warning',
                             class_name='m-1 shadow-sm'
                         ),
+                        html.Br(),
+                        dbc.Button(
+                            'Descarga el afiche',
+                            id='img-button',
+                            color='success',
+                            class_name='invisible',
+                            type='button',
+                        ),
+                        dcc.Download(
+                            id='download-image'
+                        ),
                         # dbc.Card(
                         #     [
                         #        dbc.CardHeader(html.H4('¡Paciencia!', className='card-title text-center')),
@@ -413,6 +425,7 @@ app.layout = dbc.Container(
               # Output('cls-predictions', 'children'),
               Output('main-card', 'className'),
               Output('imgs-idx-store', 'data'),
+              Output('img-button', 'class_name'),
               Input('pic-upload-1', 'contents'))
 def send_image(contents):
     if contents is not None:
@@ -426,6 +439,7 @@ def send_image(contents):
                 response = requests.post(urljoin(API, api_upload_image), files=files)
                 response_dict = json.loads(response.text)
                 nearest_neighbors = ', '.join([name for name in response_dict['nearest_neighbors'][:n_neighbors]])
+                download_button_class_name = 'visible d-grid gap-2 col-6 mx-auto shadow-md' if utils.infographics_dict.get(nearest_neighbors, None) else 'invisible'
                 # pred_style={
                 #         'width': '90%',
                 #         'height': '70px',
@@ -437,12 +451,12 @@ def send_image(contents):
                 #         'textAlign': 'center',
                 #         'margin': '10px'
                 #     }
-                return 'Sugerencia de clase: ' + nearest_neighbors, 'bg-success', response_dict['nearest_imgs_idx']
+                return 'Sugerencia de clase: ' + nearest_neighbors, 'bg-success', response_dict['nearest_imgs_idx'], download_button_class_name
         except Exception as e:
             print(e)
-            return "Hubo un problema al procesar la imagen, vuelve a intentar con un archivo de imagen válido.", '', None
+            return "Hubo un problema al procesar la imagen, vuelve a intentar con un archivo de imagen válido.", '', None, no_update
     else:
-        return 'Afiche aleatorio', '', None
+        return 'Afiche aleatorio', '', None, no_update
         
 
 about_classifications_text = 'Tener presente que la clasificación puede ser desacertada. Considerar con precaución.'
@@ -596,5 +610,25 @@ def get_nearest_imgs(timestamp, data):
         return no_update, no_update, no_update, no_update, no_update 
 
 
+@app.callback(
+    Output('download-image', 'data'),
+    Input('img-button', 'n_clicks'),
+    State('info-img-title', 'children'),
+    prevent_initial_call=True
+)
+def download_infographic(n_clicks, pred):
+    # 'Afiche aleatorio'
+    if 'Sugerencia de clase:' in pred:
+        first_pred = pred.partition(': ')[2]
+        file_name = utils.infographics_dict.get(first_pred, None)
+        if file_name:
+            path_file = infographics_path / file_name
+            return dcc.send_file(path_file)
+        else:
+            no_update
+    else:
+        no_update
+    
+
 if __name__ == "__main__":
-    app.run_server(debug=False, port="9000")
+    app.run_server(debug=True, port="9000")
