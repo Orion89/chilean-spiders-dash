@@ -439,7 +439,7 @@ def send_image(contents):
                 response = requests.post(urljoin(API, api_upload_image), files=files)
                 response_dict = json.loads(response.text)
                 nearest_neighbors = ', '.join([name for name in response_dict['nearest_neighbors'][:n_neighbors]])
-                download_button_class_name = 'visible d-grid gap-2 col-6 mx-auto shadow-md' if utils.infographics_dict.get(nearest_neighbors, None) else 'invisible'
+                download_button_class_name = 'visible d-grid gap-2 col-6 mx-auto shadow' if utils.infographics_dict.get(nearest_neighbors, None) else 'invisible'
                 # pred_style={
                 #         'width': '90%',
                 #         'height': '70px',
