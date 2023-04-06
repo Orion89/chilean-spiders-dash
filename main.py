@@ -68,7 +68,7 @@ app.layout = dbc.Container(
                                     # "Arrastra la fotografía acá o ",
                                     # html.P('Arrastra la fotografía acá o'),
                                     html.A(
-                                        'Arrastra acá la fotografía o haz click (toca) para seleciconar el archivo',
+                                        'Arrastra la foto acá o haz click (toca) para seleciconar el archivo',
                                         style={
                                             'overflowWrap': 'breakWord',
                                             'cursor': 'pointer',
@@ -78,7 +78,7 @@ app.layout = dbc.Container(
                                             'fontWeight': 'bold'
                                         },
                                         className='mt-3 mb-2 text-info font-weight-bold'
-                                    )
+                                    ),
                                 ],
                                 className='mt-3 mb-2 font-weight-bold'
                             )
@@ -109,6 +109,18 @@ app.layout = dbc.Container(
                 )
             ],
             justify='around'
+        ),
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        html.P('La imagen debe ser lo más cercana y nítida posible para mejores sugerencias.',
+                               className='text-center')
+                    ],
+                    width={'size': 10, 'offset': 0},
+                )
+            ],
+            justify='center'
         ),
         dbc.Row(
             [
@@ -226,7 +238,7 @@ app.layout = dbc.Container(
                                                       className='card-title text-center')),
                                dbc.CardBody(
                                    [
-                                       html.P('Puede que la primera predicción cuando se entra al sitio tarde varios segundos.',
+                                       html.P('Puede que el primer uso (envío de fotografía y sugerencia de clase) que se realice tarde varios segundos.',
                                               id='warning-text',
                                               className='card-text')
                                    ]
@@ -247,6 +259,7 @@ app.layout = dbc.Container(
                         dcc.Download(
                             id='download-image'
                         ),
+                        html.Br()
                         # dbc.Card(
                         #     [
                         #        dbc.CardHeader(html.H4('¡Paciencia!', className='card-title text-center')),
