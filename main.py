@@ -66,36 +66,41 @@ app.layout = dbc.Container(
                             html.Div(
                                 [
                                     # "Arrastra la fotografía acá o ",
+                                    # html.P('Arrastra la fotografía acá o'),
                                     html.A(
-                                        'Arrastra la fotografía acá o haz click para seleciconar el archivo',
-                                        # className='text-nowrap',
+                                        'Arrastra acá la fotografía o haz click (toca) para seleciconar el archivo',
                                         style={
-                                            'overflowWrap': 'break-word',
-                                            'cursor': 'pointer'
-                                            # 'wordBreak': 'break-word'
-                                        }
+                                            'overflowWrap': 'breakWord',
+                                            'cursor': 'pointer',
+                                            'wordBreak': 'breakAll',
+                                            'verticalAlign': 'sub',
+                                            'textDecoration': 'none',
+                                            'fontWeight': 'bold'
+                                        },
+                                        className='mt-3 mb-2 text-info font-weight-bold'
                                     )
-                                ]        
+                                ],
+                                className='mt-3 mb-2 font-weight-bold'
                             )
                         ],
                         multiple=False,
                         accept='image/*',
-                        max_size=4e7
+                        max_size=4e7,
+                        style={
+                            'width': '90%',
+                            'height': '90px',
+                            'lineHeight': 'normal',
+                            'borderWidth': '2px',
+                            'borderStyle': 'dashed',
+                            'borderRadius': '5px',
+                            'textAlign': 'center',
+                            'margin': '10px',
+                        },
                     ),
-                    style={
-                        'width': '90%',
-                        'height': '90px',
-                        'lineHeight': '60px',
-                        'borderWidth': '2px',
-                        'borderStyle': 'dashed',
-                        'borderRadius': '5px',
-                        'textAlign': 'center',
-                        'margin': '10px'
-                    },
-                    width={'size': 10, 'offset': 2},
+                    width={'size': 10, 'offset': 1},
                     md={
                         'size': 10,
-                        'offset': 2
+                        'offset': 1
                     },
                     xs={
                         'size': 12,
@@ -103,7 +108,7 @@ app.layout = dbc.Container(
                     }
                 )
             ],
-            justify='center'
+            justify='around'
         ),
         dbc.Row(
             [
@@ -277,7 +282,8 @@ app.layout = dbc.Container(
                         'order': 'last'
                     }
                 )
-            ]
+            ],
+            align='center'
         ),
         dbc.Row(
             [
@@ -405,7 +411,11 @@ app.layout = dbc.Container(
                         dbc.Card(
                             [
                                 dbc.CardFooter(
-                                    html.P("2023 Leonardo Molina")
+                                    [
+                                        html.P("2023 Leonardo Molina V."),
+                                        html.P('Proyecto académico. El autor no se hace responsable del mal uso del contenido o predicciones.')
+                                    ]
+                                    
                                 )
                             ],
                         )
@@ -414,6 +424,7 @@ app.layout = dbc.Container(
                     width={'size': 12}
                 )
             ],
+            align='center',
             class_name='text-end'
         )
     ],
