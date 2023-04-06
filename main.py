@@ -68,7 +68,7 @@ app.layout = dbc.Container(
                                     # "Arrastra la fotografía acá o ",
                                     # html.P('Arrastra la fotografía acá o'),
                                     html.A(
-                                        'Arrastra la foto acá o haz click (toca) para seleciconar el archivo',
+                                        'Arrastra la foto acá o haz click (toca) para seleciconar el archivo (o tomar una foto)',
                                         style={
                                             'overflowWrap': 'breakWord',
                                             'cursor': 'pointer',
@@ -114,10 +114,10 @@ app.layout = dbc.Container(
             [
                 dbc.Col(
                     [
-                        html.P('La imagen debe ser lo más cercana y nítida posible para mejores sugerencias.',
+                        html.P('La imagen debe ser lo más cercana y nítida posible para sugerencias más precisas.',
                                className='text-center')
                     ],
-                    width={'size': 10, 'offset': 0},
+                    width={'size': 12, 'offset': 0},
                 )
             ],
             justify='center'
@@ -293,10 +293,10 @@ app.layout = dbc.Container(
                         'size': 8,
                         'offset': 2,
                         'order': 'last'
-                    }
+                    },
                 )
             ],
-            align='center'
+            align='start'
         ),
         dbc.Row(
             [
