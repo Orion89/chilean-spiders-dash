@@ -25,7 +25,7 @@ spiders_classes = json.loads(requests.get(urljoin(API, api_get_classes)).text)
 
 app = dash.Dash(__name__,
                 external_stylesheets=[dbc.themes.SIMPLEX], # https://www.nelsontang.com/blog/2022-06-02-dash-tips
-                title='Identifica tu araña',
+                title='Identifica la araña',
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0'}]
                 )
@@ -114,7 +114,7 @@ app.layout = dbc.Container(
             [
                 dbc.Col(
                     [
-                        html.P('La imagen debe ser lo más cercana y nítida posible para sugerencias más precisas.',
+                        html.P('Se recomienda fotografía ventral. La imagen debe ser lo más cercana y nítida posible para sugerencias más precisas.',
                                className='text-center')
                     ],
                     width={'size': 12, 'offset': 0},
@@ -457,7 +457,7 @@ def send_image(contents):
         n_neighbors = 1
         print(content_type)
         try:
-            if 'jpeg' in content_type:
+            if 'image' in content_type:
                 decoded = base64.b64decode(content_string)
                 files = {'file': decoded}
                 response = requests.post(urljoin(API, api_upload_image), files=files)
@@ -476,6 +476,8 @@ def send_image(contents):
                 #         'margin': '10px'
                 #     }
                 return 'Sugerencia de clase: ' + nearest_neighbors, 'bg-success', response_dict['nearest_imgs_idx'], download_button_class_name
+            else:
+                return 'Tipo de archivo no válido.', 'bg-danger', no_update, no_update
         except Exception as e:
             print(e)
             return "Hubo un problema al procesar la imagen, vuelve a intentar con un archivo de imagen válido.", '', None, no_update
@@ -573,7 +575,7 @@ def refresh_infographic(predictions):
         elif first_pred == 'oecobius sp':
             return (str(infographics_path / 'genero_oecobius.jpg'))
         
-        elif first_pred == 'pachylus' or first_pred == 'sadocus_sp':
+        elif first_pred == 'pachylus' or first_pred == 'sadocus sp':
             return (str(infographics_path / 'orden_opilones.jpg'))
         
         elif first_pred == 'petrichus sp':
