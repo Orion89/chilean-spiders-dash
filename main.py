@@ -478,7 +478,7 @@ def send_image(contents):
                 #         'textAlign': 'center',
                 #         'margin': '10px'
                 #     }
-                return 'Sugerencia de clase: ' + nearest_neighbors, 'bg-success', response_dict['nearest_imgs_idx'], download_button_class_name
+                return 'Sugerencia de identificación: ' + nearest_neighbors, 'bg-success', response_dict['nearest_imgs_idx'], download_button_class_name
             else:
                 return 'Tipo de archivo no válido.', 'bg-danger', no_update, no_update
         except Exception as e:
@@ -672,4 +672,4 @@ def request_info(children):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port="9000")
+    app.run_server(debug=False, port="9000")
