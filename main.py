@@ -16,16 +16,17 @@ import dash_bootstrap_components as dbc
 import requests
 
 API = os.environ['API_URL'] # 'http://127.0.0.1:8000' 
-api_upload_image = '/send_img/'
+api_upload_image = '/upload_img/'
 api_get_classes = '/get_train_classes/'
 api_get_pred_imgs = '/send_nearest_imgs/'
 
 infographics_path = Path('./static/afiches/')
 spiders_classes = json.loads(requests.get(urljoin(API, api_get_classes)).text)
+not_used_class_names = 'canis spider'
 
 app = dash.Dash(__name__,
                 external_stylesheets=[dbc.themes.SIMPLEX], # https://www.nelsontang.com/blog/2022-06-02-dash-tips
-                title='Identifica la araña',
+                title='Identifica esa araña',
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0'}]
                 )
@@ -307,7 +308,7 @@ app.layout = dbc.Container(
                             dbc.CardBody(
                             [
                                 html.P(
-                                    'El algoritmo fue ajustado usando fotografías de sólo 50 clases, '
+                                    'El algoritmo fue ajustado usando fotografías de sólo 51 clases, '
                                     'siendo este último término usado en forma general para distintos conceptos: '
                                     'Familia, género y especie.',
                                     className='card-text'
@@ -345,7 +346,7 @@ app.layout = dbc.Container(
                             dbc.CardHeader(html.H5('Clases de ajuste del algoritmo', className='card-title')),
                             dbc.CardBody(
                                 html.P(
-                                    ", ".join([name.replace('_', '') for name in spiders_classes['train_classes']]),
+                                    ", ".join([name.replace('_', '') for name in spiders_classes['train_classes'] if name != not_used_class_names]),
                                     className='card-text'
                                 )
                             )
@@ -607,7 +608,8 @@ def refresh_infographic(predictions):
         
         elif first_pred == 'zygiella x-notata':
             return (str(infographics_path / 'especie_zygiella_x-notata.jpg'))
-        
+        elif first_pred == 'solifugae':
+            return (str(infographics_path / 'orden_solifugae.jpg'))
         else:
             return (str(infographics_path / 'no_afiche.png'))
     
@@ -657,4 +659,4 @@ def download_infographic(n_clicks, pred):
     
 
 if __name__ == "__main__":
-    app.run_server(debug=False, port="9000")
+    app.run_server(debug=True, port="9000")
