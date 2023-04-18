@@ -12,6 +12,7 @@ import dash
 from dash import dcc, html, no_update
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+from flask import request
 
 import requests
 
@@ -422,6 +423,7 @@ app.layout = dbc.Container(
             [
                 dbc.Col(
                     [
+                        html.Div(id='user-info', className='invisible m-0'),
                         dbc.Card(
                             [
                                 dbc.CardFooter(
@@ -658,5 +660,16 @@ def download_infographic(n_clicks, pred):
         no_update
     
 
+@app.callback(Output('user-info', 'children'),
+              Input('user-info', 'children'))
+def request_info(children):
+    host = request.headers['host']
+    user_agent = request.user_agent
+    print(f'host info: {host}')
+    print(f'from user-agent: {user_agent}')
+    
+    return no_update
+
+
 if __name__ == "__main__":
-    app.run_server(debug=False, port="9000")
+    app.run_server(debug=True, port="9000")
