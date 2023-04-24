@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import random
 from urllib.parse import urljoin
+from config.db import conn
 from utils import utils
 
 import plotly
@@ -14,7 +15,9 @@ from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from flask import request
 
+from ip2geotools.databases.noncommercial import DbIpCity
 import requests
+
 
 API = os.environ['API_URL'] # 'http://127.0.0.1:8000' 
 api_upload_image = '/upload_img/'
@@ -663,13 +666,39 @@ def download_infographic(n_clicks, pred):
 @app.callback(Output('user-info', 'children'),
               Input('user-info', 'children'))
 def request_info(children):
-    host = request.headers['host']
+    host = request.headers['host'].partition(':')[0]
     user_agent = request.user_agent
     print(f'host info: {host}')
     print(f'from user-agent: {user_agent}')
+    
+    try:
+        request_info = DbIpCity.get(host, api_key='free')
+        region = request_info.region
+        country = request_info.country
+        latitude = request_info.latitude
+        longitude = request_info.longitude
+    except Exception as e:
+        print('An error has ocurred in getting user info:')
+        print(e)
+    
+    cursor = conn.cursor()
+    cursor.execute(
+        '''
+        INSERT INTO user_info (host, user_agent, region, country, latitude, longitude)
+        VALUES (:host, :user_agent, :region, :country, :latitude, :longitude)
+        ''',
+        host=host,
+        user_agent=user_agent,
+        region=region,
+        country=country,
+        latitude=latitude,
+        longitude=longitude
+    )
+    conn.commit()
+    cursor.close()
     
     return no_update
 
 
 if __name__ == "__main__":
-    app.run_server(debug=False, port="9000")
+    app.run_server(debug=True, port="9000")
