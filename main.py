@@ -315,7 +315,11 @@ app.layout = dbc.Container(
                                 html.P(
                                     'El algoritmo fue ajustado usando fotografías de sólo 51 clases, '
                                     'siendo este último término usado en forma general para distintos conceptos: '
-                                    'Familia, género y especie.',
+                                    'Orden, Familia, género y especie.',
+                                    className='card-text'
+                                ),
+                                html.P(
+                                    'El modelo entregará un resultado aún cuando las fotografías no correspondan a arácnidos.',
                                     className='card-text'
                                 ),
                                 html.P(
