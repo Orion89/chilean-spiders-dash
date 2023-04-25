@@ -668,12 +668,13 @@ def download_infographic(n_clicks, pred):
               Input('user-info', 'children'))
 def request_info(children):
     host = request.headers['host'].partition(':')[0]
+    request_address = request.remote_addr
     user_agent = request.user_agent
     print(f'host info: {host}')
     print(f'from user-agent: {user_agent}')
     
     try:
-        request_info = DbIpCity.get(host, api_key='free')
+        request_info = DbIpCity.get(request_address, api_key='free')
         region = request_info.region
         country = request_info.country
         latitude = request_info.latitude
@@ -692,7 +693,7 @@ def request_info(children):
         VALUES (:host, :region, :country, :date, :latitude, :longitude)
         ''')
     row_data = dict(
-        host=host,
+        host=request_address,
         region=region,
         country=country,
         date=datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
