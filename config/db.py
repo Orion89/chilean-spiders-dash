@@ -1,4 +1,5 @@
-import sqlite3
+from sqlalchemy import create_engine
+import os
 
-dev_url = r'C:\Users\leona\Documents\coder\ejercicios\dl\aranas_chile\db\db_spiders.db'
-conn = sqlite3.connect(dev_url)
+db_uri = os.environ['DB_URI']
+engine = create_engine(db_uri)

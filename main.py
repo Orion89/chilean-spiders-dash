@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import random
 from urllib.parse import urljoin
-from config.db import conn
+from config.db import engine
 from utils import utils
 
 import plotly
@@ -14,6 +14,7 @@ from dash import dcc, html, no_update
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from flask import request
+from sqlalchemy import text
 
 from ip2geotools.databases.noncommercial import DbIpCity
 import requests
@@ -680,25 +681,31 @@ def request_info(children):
     except Exception as e:
         print('An error has ocurred in getting user info:')
         print(e)
+        region = None
+        country = None
+        latitude = None
+        longitude = None
     
-    cursor = conn.cursor()
-    cursor.execute(
+    query = text(
         '''
-        INSERT INTO user_info (host, user_agent, region, country, latitude, longitude)
-        VALUES (:host, :user_agent, :region, :country, :latitude, :longitude)
-        ''',
+        INSERT INTO user_info (host, region, country, date, latitude, longitude)
+        VALUES (:host, :region, :country, :date, :latitude, :longitude)
+        ''')
+    row_data = dict(
         host=host,
-        user_agent=user_agent,
         region=region,
         country=country,
+        date=datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
         latitude=latitude,
         longitude=longitude
     )
-    conn.commit()
-    cursor.close()
-    
+    engine.execute(
+        query,
+        **row_data  
+    )
+
     return no_update
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port="9000")
+    app.run_server(debug=False, port="9000")
