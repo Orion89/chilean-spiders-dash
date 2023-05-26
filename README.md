@@ -23,3 +23,6 @@ La app consume una pequeña API desarrollada usando FastAPI, la cual se puede ve
 Se ha utilizado un red *ResNet50* como *feature extractor* con pesos pre entrenados más una serie de capas lineales y funciones de activación entre estas últimas como cabeceras, con pesos iniciados aleatoriamente. El entrenamiento ajusta los pesos (a los cuales no se les hace *freeze*) usando la función de pérdida *triplet loss* [(Schroff et al. 2015)](https://arxiv.org/abs/1503.03832):
 
 $$\mathcal{L}_{triplet}=max \left(0, \mathcal{D}^{2}_{f_{\theta}}(x_{a}, x_{p}) - \mathcal{D}^{2}_{f_{\theta}}(x_{a}, x_{n}) + \alpha \right)$$
+
+<img src="https://latex.codecogs.com/gif.latex?\mathcal{L}_{triplet}=max\left(0,\mathcal{D}^{2}_{f_{\theta}}(x_{a}, x_{p})-\mathcal{D}^{2}_{f_{\theta}}(x_{a}, x_{n})+\alpha \right)"/>
+<img src="https://render.githubusercontent.com/render/math?math=\mathcal{L}_{triplet}=max\left(0,\mathcal{D}^{2}_{f_{\theta}}(x_{a}, x_{p})-\mathcal{D}^{2}_{f_{\theta}}(x_{a}, x_{n})+\alpha \right)">
