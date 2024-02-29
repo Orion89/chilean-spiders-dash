@@ -432,7 +432,7 @@ app.layout = dbc.Container(
             [
                 dbc.Col(
                     [
-                        html.Div(id='user-info', className='invisible m-0'),
+                        # html.Div(id='user-info', className='invisible m-0'),
                         dbc.Card(
                             [
                                 dbc.CardFooter(
@@ -669,48 +669,48 @@ def download_infographic(n_clicks, pred):
         no_update
     
 
-@app.callback(Output('user-info', 'children'),
-              Input('user-info', 'children'))
-def request_info(children):
-    host = request.headers['host'].partition(':')[0]
-    request_address = request.remote_addr
-    user_agent = request.user_agent
-    print(f'host info: {host}')
-    print(f'from user-agent: {user_agent}')
+# @app.callback(Output('user-info', 'children'),
+#               Input('user-info', 'children'))
+# def request_info(children):
+#     host = request.headers['host'].partition(':')[0]
+#     request_address = request.remote_addr
+#     user_agent = request.user_agent
+#     print(f'host info: {host}')
+#     print(f'from user-agent: {user_agent}')
     
-    try:
-        request_info = DbIpCity.get(request_address, api_key='free')
-        region = request_info.region
-        country = request_info.country
-        latitude = request_info.latitude
-        longitude = request_info.longitude
-    except Exception as e:
-        print('An error has ocurred in getting user info:')
-        print(e)
-        region = None
-        country = None
-        latitude = None
-        longitude = None
+#     try:
+#         request_info = DbIpCity.get(request_address, api_key='free')
+#         region = request_info.region
+#         country = request_info.country
+#         latitude = request_info.latitude
+#         longitude = request_info.longitude
+#     except Exception as e:
+#         print('An error has ocurred in getting user info:')
+#         print(e)
+#         region = None
+#         country = None
+#         latitude = None
+#         longitude = None
     
-    query = text(
-        '''
-        INSERT INTO user_info (host, region, country, date, latitude, longitude)
-        VALUES (:host, :region, :country, :date, :latitude, :longitude)
-        ''')
-    row_data = dict(
-        host=request_address,
-        region=region,
-        country=country,
-        date=datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
-        latitude=latitude,
-        longitude=longitude
-    )
-    engine.execute(
-        query,
-        **row_data  
-    )
+#     query = text(
+#         '''
+#         INSERT INTO user_info (host, region, country, date, latitude, longitude)
+#         VALUES (:host, :region, :country, :date, :latitude, :longitude)
+#         ''')
+#     row_data = dict(
+#         host=request_address,
+#         region=region,
+#         country=country,
+#         date=datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
+#         latitude=latitude,
+#         longitude=longitude
+#     )
+#     engine.execute(
+#         query,
+#         **row_data  
+#     )
 
-    return no_update
+#     return no_update
 
 
 if __name__ == "__main__":
