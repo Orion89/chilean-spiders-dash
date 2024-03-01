@@ -187,7 +187,7 @@ app.layout = dbc.Container(
                                                         className='card-title'
                                                     ),
                                                     type='grow',
-                                                    color='secundary'
+                                                    color='secondary'
                                                 )
                                         ),
                                     dbc.CardBody(
@@ -196,10 +196,14 @@ app.layout = dbc.Container(
                                             #     id="cls-predictions",
                                             #     className='fw-bolder'
                                             # ),
-                                            dbc.CardImg(
-                                            src="/static/afiches/familia_salticidae.jpg",
-                                            id='info-img'
-                                    ),
+                                            dcc.Loading(
+                                                dbc.CardImg(
+                                                    src="/static/afiches/familia_salticidae.jpg",
+                                                    id='info-img'
+                                                ),
+                                                type='cube',
+                                                color='secondary'
+                                            ),
                                     dbc.CardFooter(
                                         [
                                             html.P(
