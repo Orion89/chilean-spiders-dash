@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import random
 from urllib.parse import urljoin
-from config.db import engine
+# from config.db import engine
 from utils import utils
 
 import plotly
@@ -16,7 +16,7 @@ import dash_bootstrap_components as dbc
 from flask import request
 from sqlalchemy import text
 
-from ip2geotools.databases.noncommercial import DbIpCity
+# from ip2geotools.databases.noncommercial import DbIpCity
 import requests
 
 
@@ -180,11 +180,15 @@ app.layout = dbc.Container(
                             dbc.Card(
                                 [
                                     dbc.CardHeader(
-                                            html.H4(
-                                                'Afiche aleatorio',
-                                                id='info-img-title',
-                                                className='card-title'
-                                            )
+                                            dbc.Spinner(
+                                                    html.H4(
+                                                        'Afiche aleatorio',
+                                                        id='info-img-title',
+                                                        className='card-title'
+                                                    ),
+                                                    type='grow',
+                                                    color='secundary'
+                                                )
                                         ),
                                     dbc.CardBody(
                                         [
