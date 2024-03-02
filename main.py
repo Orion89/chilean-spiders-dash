@@ -30,7 +30,7 @@ spiders_classes = json.loads(requests.get(urljoin(API, api_get_classes)).text)
 not_used_class_names = 'canis spider'
 
 app = dash.Dash(__name__,
-                external_stylesheets=[dbc.themes.SIMPLEX], # https://www.nelsontang.com/blog/2022-06-02-dash-tips
+                external_stylesheets=[dbc.themes.SIMPLEX, dbc.icons.BOOTSTRAP], # https://www.nelsontang.com/blog/2022-06-02-dash-tips
                 title='Identifica esa araña',
                 meta_tags=[{'name': 'viewport',
                             'content': 'width=device-width, initial-scale=1.0'}]
@@ -445,7 +445,17 @@ app.layout = dbc.Container(
                             [
                                 dbc.CardFooter(
                                     [
-                                        html.P("2023 Leonardo Molina V."),
+                                        html.P([
+                                            html.A(
+                                                #children=[],
+                                                disable_n_clicks=True,
+                                                href='https://github.com/Orion89',
+                                                className="bi bi-github",
+                                                title="GitHub profile"
+                                            ),
+                                            "2023 Leonardo Molina V."
+                                            ]
+                                        ),
                                         html.P('Proyecto académico. El autor no se hace responsable del mal uso del contenido o predicciones.')
                                     ]
                                     
