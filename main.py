@@ -71,7 +71,7 @@ app.layout = dbc.Container(
                             #     )
                             # )
                             html.I(
-                                        className="bi bi-cloud-upload text-secondary fs-1 mt-2"
+                                        className="bi bi-cloud-upload text-secondary fs-1 mt-2 mb-1"
                                     ),
                             html.Div(
                                 [
@@ -87,7 +87,7 @@ app.layout = dbc.Container(
                                             'textDecoration': 'none',
                                             'fontWeight': 'bold'
                                         },
-                                        className='mt-2 mb-2 text-info font-weight-bold'
+                                        className='mt-1 mb-2 text-info font-weight-bold'
                                     ),
                                 ],
                                 className='mt-3 mb-2 font-weight-bold'
