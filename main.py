@@ -74,8 +74,11 @@ app.layout = dbc.Container(
                                 [
                                     # "Arrastra la fotografía acá o ",
                                     # html.P('Arrastra la fotografía acá o'),
+                                    html.I(
+                                        className="bi bi-cloud-upload text-secondary"
+                                    ),
                                     html.A(
-                                        'Arrastra la foto acá o haz click (toca) para seleciconar el archivo (o tomar una foto)',
+                                        'Arrastra la foto acá o haz click (toca) para tomar una foto (o seleccionar desde el dispositivo)',
                                         style={
                                             'overflowWrap': 'breakWord',
                                             'cursor': 'pointer',
