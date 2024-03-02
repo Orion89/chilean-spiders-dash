@@ -447,7 +447,7 @@ app.layout = dbc.Container(
                                     [
                                         html.P([
                                             html.A(
-                                                children=[html.I(className="bi bi-github", color='dark')],
+                                                children=[html.I(className="bi bi-github")],
                                                 disable_n_clicks=True,
                                                 href='https://github.com/Orion89',
                                                 title="GitHub profile"
