@@ -70,9 +70,8 @@ app.layout = dbc.Container(
                             #         href='#'
                             #     )
                             # )
-                            html.Br(),
                             html.I(
-                                        className="bi bi-cloud-upload text-secondary fs-1"
+                                        className="bi bi-cloud-upload text-secondary fs-1 mt-1"
                                     ),
                             html.Div(
                                 [
