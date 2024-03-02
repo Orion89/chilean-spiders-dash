@@ -447,13 +447,12 @@ app.layout = dbc.Container(
                                     [
                                         html.P([
                                             html.A(
-                                                #children=[],
+                                                children=[html.I(className="bi bi-github")],
                                                 disable_n_clicks=True,
                                                 href='https://github.com/Orion89',
-                                                className="bi bi-github",
                                                 title="GitHub profile"
                                             ),
-                                            "2023 Leonardo Molina V."
+                                            " 2023 Leonardo Molina V."
                                             ]
                                         ),
                                         html.P('Proyecto académico. El autor no se hace responsable del mal uso del contenido o predicciones.')
