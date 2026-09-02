@@ -1,25 +1,25 @@
 import base64
-from datetime import datetime
 import json
 import os
-from pathlib import Path
 import random
+from datetime import datetime
+from pathlib import Path
 from urllib.parse import urljoin
 
-# from config.db import engine
-from utils import utils
-
-import plotly
 import dash
-from dash import dcc, html, no_update
-from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-from flask import request
-from sqlalchemy import text
+import plotly
 
 # from ip2geotools.databases.noncommercial import DbIpCity
 import requests
+from dash import dcc, html, no_update
+from dash.dependencies import Input, Output, State
+from flask import request
+from sqlalchemy import text
 
+# from config.db import engine
+from components.upload_component import upload_component
+from utils import utils
 
 API = os.environ["API_URL"]  # 'http://127.0.0.1:8000'
 api_upload_image = "/upload_img/"
@@ -66,51 +66,11 @@ app.layout = dbc.Container(
         dbc.Row(
             [
                 dbc.Col(
-                    dcc.Upload(
-                        id="pic-upload-1",
-                        children=[
-                            # dbc.Card(
-                            #     dbc.CardLink(
-                            #         'Arrastra la fotografía acá o haz click para seleciconar el archivo',
-                            #         href='#'
-                            #     )
-                            # )
-                            html.I(
-                                className="bi bi-cloud-upload text-secondary fs-1 mt-2 mb-1"
-                            ),
-                            html.Div(
-                                [
-                                    # "Arrastra la fotografía acá o ",
-                                    # html.P('Arrastra la fotografía acá o'),
-                                    html.A(
-                                        "Arrastra y suelta, o haz click (toca) para tomar una foto (o seleccionar desde el dispositivo)",
-                                        style={
-                                            "overflowWrap": "breakWord",
-                                            "cursor": "pointer",
-                                            "wordBreak": "breakAll",
-                                            "verticalAlign": "sub",
-                                            "textDecoration": "none",
-                                            "fontWeight": "bold",
-                                        },
-                                        className="mt-1 mb-2 text-info font-weight-bold",
-                                    ),
-                                ],
-                                className="mt-3 mb-2 font-weight-bold",
-                            ),
-                        ],
-                        multiple=False,
-                        accept="image/*",
-                        max_size=4e7,
-                        style={
-                            "width": "90%",
-                            "height": "90px",
-                            "lineHeight": "normal",
-                            "borderWidth": "2px",
-                            "borderStyle": "dashed",
-                            "borderRadius": "5px",
-                            "textAlign": "center",
-                            "margin": "10px",
-                        },
+                    dcc.Loading(
+                        id="loading-upload",
+                        type="circle",
+                        color="#0d6efd",
+                        children=upload_component,
                     ),
                     width={"size": 10, "offset": 1},
                     md={"size": 10, "offset": 1},
@@ -118,6 +78,7 @@ app.layout = dbc.Container(
                 )
             ],
             justify="around",
+            className="mb-4",
         ),
         dbc.Row(
             [
@@ -694,49 +655,5 @@ def download_infographic(n_clicks, pred):
         no_update
 
 
-# @app.callback(Output('user-info', 'children'),
-#               Input('user-info', 'children'))
-# def request_info(children):
-#     host = request.headers['host'].partition(':')[0]
-#     request_address = request.remote_addr
-#     user_agent = request.user_agent
-#     print(f'host info: {host}')
-#     print(f'from user-agent: {user_agent}')
-
-#     try:
-#         request_info = DbIpCity.get(request_address, api_key='free')
-#         region = request_info.region
-#         country = request_info.country
-#         latitude = request_info.latitude
-#         longitude = request_info.longitude
-#     except Exception as e:
-#         print('An error has ocurred in getting user info:')
-#         print(e)
-#         region = None
-#         country = None
-#         latitude = None
-#         longitude = None
-
-#     query = text(
-#         '''
-#         INSERT INTO user_info (host, region, country, date, latitude, longitude)
-#         VALUES (:host, :region, :country, :date, :latitude, :longitude)
-#         ''')
-#     row_data = dict(
-#         host=request_address,
-#         region=region,
-#         country=country,
-#         date=datetime.now().strftime('%d-%m-%Y %H:%M:%S'),
-#         latitude=latitude,
-#         longitude=longitude
-#     )
-#     engine.execute(
-#         query,
-#         **row_data
-#     )
-
-#     return no_update
-
-
 if __name__ == "__main__":
-    app.run_server(debug=False, port="9000")
+    app.run(debug=False, port="9000")
