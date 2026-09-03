@@ -9,15 +9,12 @@ from urllib.parse import urljoin
 import dash
 import dash_bootstrap_components as dbc
 import plotly
-
-# from ip2geotools.databases.noncommercial import DbIpCity
 import requests
 from dash import dcc, html, no_update
 from dash.dependencies import Input, Output, State
 from flask import request
 from sqlalchemy import text
 
-# from config.db import engine
 from components.upload_component import upload_component
 from utils import utils
 
@@ -40,9 +37,44 @@ app = dash.Dash(
     meta_tags=[
         {"name": "viewport", "content": "width=device-width, initial-scale=1.0"}
     ],
+    suppress_callback_exceptions=True,
 )
 
 server = app.server
+
+
+def initial_empty_state():
+    return dbc.Card(
+        dbc.CardBody(
+            [
+                html.Div(
+                    [
+                        html.Img(
+                            src="/static/ilustraciones/spider-web-1.svg",
+                            style={
+                                "height": "120px",
+                                "opacity": "0.6",
+                            },
+                            className="mb-3",
+                        ),
+                        html.H4(
+                            "Sin imagen seleccionada",
+                            className="mt-3 text-secondary fw-bold",
+                        ),
+                        html.P(
+                            "Sube una fotografía nítida (de preferencia vista ventral) de un arácnido encontrado en Chile para obtener su clasificación taxonómica y afiche educativo.",
+                            className="text-muted mx-auto",
+                            style={"maxWidth": "500px"},
+                        ),
+                    ],
+                    className="text-center py-5",
+                )
+            ]
+        ),
+        className="shadow-sm border-dashed",
+        id="empty-state-card",
+    )
+
 
 app.layout = dbc.Container(
     [
@@ -84,20 +116,6 @@ app.layout = dbc.Container(
             [
                 dbc.Col(
                     [
-                        html.P(
-                            "La fotografía debe ser ventral. La imagen debe ser lo más cercana y nítida posible para sugerencias más precisas.",
-                            className="text-center",
-                        )
-                    ],
-                    width={"size": 12, "offset": 0},
-                )
-            ],
-            justify="center",
-        ),
-        dbc.Row(
-            [
-                dbc.Col(
-                    [
                         dbc.Card(
                             [
                                 dbc.CardImg(id="img-1", class_name="m-1 p-1 shadow-sm"),
@@ -125,65 +143,17 @@ app.layout = dbc.Container(
                 ),
                 dbc.Col(
                     html.Div(
-                        [
-                            dbc.Card(
-                                [
-                                    dbc.CardHeader(
-                                        dbc.Spinner(
-                                            html.H4(
-                                                "Afiche aleatorio",
-                                                id="info-img-title",
-                                                className="card-title",
-                                            ),
-                                            type="grow",
-                                            color="secondary",
-                                        )
-                                    ),
-                                    dbc.CardBody(
-                                        [
-                                            #  html.P(
-                                            #     id="cls-predictions",
-                                            #     className='fw-bolder'
-                                            # ),
-                                            dbc.Spinner(
-                                                dbc.CardImg(
-                                                    src="/static/afiches/familia_salticidae.jpg",
-                                                    id="info-img",
-                                                ),
-                                                type="border",
-                                                color="secondary",
-                                            ),
-                                            dbc.CardFooter(
-                                                [
-                                                    html.P(
-                                                        "Todos los créditos al equipo de Arañas de Chile detallado en la parte inferior del afiche.",
-                                                        className="card-text",
-                                                    ),
-                                                    dcc.Store(
-                                                        id="imgs-idx-store"
-                                                    ),  # html.P(id='imgs-idxs', className='invisible')
-                                                ],
-                                                className="mt-2 mb-1",
-                                            ),
-                                        ]
-                                    ),
-                                ],
-                                id="main-card",
-                                class_name="m-1 shadow-sm",
-                            )
-                        ],
+                        id="result-container",
+                        children=[initial_empty_state()],  # Llamamos a la función aquí
                         className="m-1 primary",
                     ),
                     width={"size": 8, "offset": 0},
-                    lg={
-                        "size": 8,
-                        "offset": 0,
-                        # 'order': 'first'
-                    },
-                    md={"size": 8, "offset": 0, "order": 2},  # first'
+                    lg={"size": 8, "offset": 0},
+                    md={"size": 8, "offset": 0, "order": 2},
                     sm={"size": 12, "offset": 0, "order": "first"},
                     xs={"size": 12, "offset": 0, "order": "first"},
                 ),
+                dcc.Store(id="imgs-idx-store"),
                 dbc.Col(
                     [
                         dbc.Card(
@@ -408,9 +378,7 @@ app.layout = dbc.Container(
 
 
 @app.callback(
-    Output("info-img-title", "children"),
-    # Output('cls-predictions', 'children'),
-    Output("main-card", "className"),
+    Output("result-container", "children"),  # Ahora actualizamos todo el contenedor
     Output("imgs-idx-store", "data"),
     Output("img-button", "class_name"),
     Input("pic-upload-1", "contents"),
@@ -419,189 +387,101 @@ def send_image(contents):
     if contents is not None:
         content_type, content_string = contents.split(",")
         n_neighbors = 1
-        print(content_type)
+
         try:
             if "image" in content_type:
                 decoded = base64.b64decode(content_string)
                 files = {"file": decoded}
                 response = requests.post(urljoin(API, api_upload_image), files=files)
                 response_dict = json.loads(response.text)
+
                 nearest_neighbors = ", ".join(
                     [name for name in response_dict["nearest_neighbors"][:n_neighbors]]
                 )
+
+                # --- NUEVA LÓGICA: Construir la tarjeta de resultado ---
+                file_name = utils.infographics_dict.get(nearest_neighbors, None)
                 download_button_class_name = (
                     "visible d-grid gap-2 col-6 mx-auto shadow"
-                    if utils.infographics_dict.get(nearest_neighbors, None)
+                    if file_name
                     else "invisible"
                 )
-                # pred_style={
-                #         'width': '90%',
-                #         'height': '70px',
-                #         'lineHeight': '60px',
-                #         'borderWidth': '2px',
-                #         'borderStyle': 'dashed',
 
-                #         'borderRadius': '5px',
-                #         'textAlign': 'center',
-                #         'margin': '10px'
-                #     }
+                # Determinar qué imagen mostrar (reutilizando tu lógica de refresh_infographic)
+                if file_name:
+                    img_src = str(infographics_path / file_name)
+                else:
+                    img_src = str(infographics_path / "no_afiche.png")
+
+                result_card = dbc.Card(
+                    [
+                        dbc.CardHeader(
+                            html.H4(
+                                f"Sugerencia de identificación: {nearest_neighbors}",
+                                className="card-title text-white",
+                            ),
+                            className="bg-success",
+                        ),
+                        dbc.CardBody(
+                            [
+                                dbc.CardImg(src=img_src, id="info-img"),
+                                dbc.CardFooter(
+                                    html.P(
+                                        "Todos los créditos al equipo de Arañas de Chile detallado en la parte inferior del afiche.",
+                                        className="card-text mb-0",
+                                    ),
+                                    className="mt-2",
+                                ),
+                            ]
+                        ),
+                    ],
+                    className="m-1 shadow-sm",
+                )
+
                 return (
-                    "Sugerencia de identificación: " + nearest_neighbors,
-                    "bg-success",
+                    result_card,
                     response_dict["nearest_imgs_idx"],
                     download_button_class_name,
                 )
             else:
-                return "Tipo de archivo no válido.", "bg-danger", no_update, no_update
+                # Manejo de error: Archivo no válido
+                error_card = dbc.Card(
+                    [
+                        dbc.CardHeader(
+                            html.H4("Error", className="card-title text-white"),
+                            className="bg-danger",
+                        ),
+                        dbc.CardBody(html.P("Tipo de archivo no válido.")),
+                    ],
+                    className="m-1 shadow-sm",
+                )
+                return error_card, no_update, no_update
+
         except Exception as e:
             print(e)
-            return (
-                "Hubo un problema al procesar la imagen, vuelve a intentar con un archivo de imagen válido.",
-                "",
-                None,
-                no_update,
+            error_card = dbc.Card(
+                [
+                    dbc.CardHeader(
+                        html.H4("Error", className="card-title text-white"),
+                        className="bg-danger",
+                    ),
+                    dbc.CardBody(
+                        html.P(
+                            "Hubo un problema al procesar la imagen, vuelve a intentar con un archivo de imagen válido."
+                        )
+                    ),
+                ],
+                className="m-1 shadow-sm",
             )
+            return error_card, no_update, no_update
+
     else:
-        return "Afiche aleatorio", "", None, no_update
+        # Si no hay contenido (carga inicial), devolvemos el Empty State
+        return initial_empty_state(), no_update, "invisible"
 
 
 about_classifications_text = "Tener presente que la clasificación puede ser desacertada. Considerar con precaución."
 about_classifications_title = "Es importante"
-
-
-@app.callback(
-    Output("info-img", "src"), Input("info-img-title", "children")
-)  # Input('cls-predictions', 'children')
-def refresh_infographic(predictions):
-    random_img = random.choice(list(infographics_path.glob("*.jpg")))
-    first_pred = predictions.partition(": ")[2]
-    if "Sugerencia" in predictions:
-        if first_pred == "acanthogonatus sp":
-            return str(infographics_path / "genero_acanthogonatus.jpg")
-
-        elif first_pred == "allende sp" or first_pred == "tetragnatha sp":
-            return str(infographics_path / "familia_tetragnathidae.jpg")
-
-        elif first_pred == "anyphaenidae":
-            return str(infographics_path / "familia_anyphaenidae.jpg")
-
-        elif first_pred == "argiope argentata" or first_pred == "argiope trifasciata":
-            return str(infographics_path / "genero_argiope.jpg")
-
-        elif first_pred == "ariadna sp":
-            return str(infographics_path / "genero_ariadna.jpg")
-
-        elif first_pred == "austrochilidae":
-            return str(infographics_path / "familia_austrochilidae.jpg")
-
-        elif first_pred == "doliomalus cimicoides":
-            return str(infographics_path / "especie_doliomalus_cimicoides.jpg")
-
-        elif first_pred == "dysdera crocata":
-            return str(infographics_path / "especie_dysdera_crocata.jpg")
-
-        elif first_pred == "euathlus manicata":
-            return str(infographics_path / "especie_euathlus_manicata.jpg")
-
-        elif first_pred == "euathlus truculentus":
-            return str(infographics_path / "especie_euathlus_truculentus.jpg")
-
-        elif first_pred == "gnaphosidae":
-            return str(infographics_path / "familia_gnaphosidae.jpg")
-
-        elif first_pred == "gnolus sp":
-            return str(infographics_path / "genero_gnolus.jpg")
-
-        elif first_pred == "grammostola rosea":
-            return str(infographics_path / "especie_grammostola_rosea.jpg")
-
-        elif first_pred == "homoeomma":
-            return str(infographics_path / "genero_homoeomma.jpg")
-
-        elif first_pred == "latrodectus sp":
-            return str(infographics_path / "genero_latrodectus.jpg")
-
-        elif first_pred == "loxosceles laeta":
-            return str(infographics_path / "genero_loxosceles.jpg")
-
-        elif first_pred == "lycosidae":
-            return str(infographics_path / "familia_lycosidae.jpg")
-
-        elif first_pred == "lyniphiidae":
-            return str(infographics_path / "familia_linyphiidae.jpg")
-
-        elif first_pred == "macerio":
-            return str(infographics_path / "genero_macerio.jpg")
-
-        elif first_pred == "mastophora sp":
-            return str(infographics_path / "genero_mastophora.jpg")
-
-        elif (
-            first_pred == "menemerus semilimbatus" or first_pred == "saphrys rusticana"
-        ):
-            return str(infographics_path / "familia_salticidae.jpg")
-
-        elif first_pred == "metepeira sp":
-            return str(infographics_path / "genero_metepeira.jpg")
-
-        elif first_pred == "misumenops sp" or first_pred == "coenypha sp":
-            return str(infographics_path / "familia_thomisidae.jpg")
-
-        elif first_pred == "molinaranea clymene":
-            return str(infographics_path / "especie_molinaranea_clymene.jpg")
-
-        elif first_pred == "molinaranea magellanica":
-            return str(infographics_path / "especie_molinaranea_magellanica.jpg")
-
-        elif first_pred == "ocrepeira sp":
-            return str(infographics_path / "especie_ocrepeira_venustula.jpg")
-
-        elif first_pred == "oecobius sp":
-            return str(infographics_path / "genero_oecobius.jpg")
-
-        elif first_pred == "pachylus" or first_pred == "sadocus sp":
-            return str(infographics_path / "orden_opilones.jpg")
-
-        elif first_pred == "petrichus sp":
-            return str(infographics_path / "genero_petrichus.jpg")
-
-        elif first_pred == "pholcidae":
-            return str(infographics_path / "familia_pholcidae.jpg")
-
-        elif first_pred == "phrixotrichus sp":
-            return str(infographics_path / "familia_theraphosidae.jpg")
-
-        elif first_pred == "plesionela bonneti":
-            return str(infographics_path / "especie_plesiolena_bonneti.jpg")
-
-        elif first_pred == "polybetes sp":
-            return str(infographics_path / "genero_polybetes.jpg")
-
-        elif first_pred == "scytodes globula":
-            return str(infographics_path / "genero_scytodes.jpg")
-
-        elif first_pred == "sicarius":
-            return str(infographics_path / "genero_sicarius.jpg")
-
-        elif (
-            first_pred == "steatoda grossa"
-            or first_pred == "steatoda nobilis"
-            or first_pred == "steatoda triangulosa"
-        ):
-            return str(infographics_path / "genero_steatoda.jpg")
-
-        elif first_pred == "sybota sp":
-            return str(infographics_path / "familia_uloboridae.jpg")
-
-        elif first_pred == "zygiella x-notata":
-            return str(infographics_path / "especie_zygiella_x-notata.jpg")
-        elif first_pred == "solifugae":
-            return str(infographics_path / "orden_solifugae.jpg")
-        else:
-            return str(infographics_path / "no_afiche.png")
-
-    else:
-        return str(random_img)
 
 
 @app.callback(
