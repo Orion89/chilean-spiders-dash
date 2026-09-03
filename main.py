@@ -15,6 +15,7 @@ from dash.dependencies import Input, Output, State
 from flask import request
 from sqlalchemy import text
 
+from components.classes_accordion import render_classes_accordion
 from components.upload_component import upload_component
 from utils import utils
 
@@ -154,6 +155,7 @@ app.layout = dbc.Container(
                     xs={"size": 12, "offset": 0, "order": "first"},
                 ),
                 dcc.Store(id="imgs-idx-store"),
+                dcc.Store(id="pred-store"),  # Guardará la predicción limpia
                 dbc.Col(
                     [
                         dbc.Card(
@@ -180,28 +182,6 @@ app.layout = dbc.Container(
                             class_name="m-1 shadow-sm",
                         ),
                         html.Br(),
-                        dbc.Button(
-                            "Descarga el afiche",
-                            id="img-button",
-                            color="success",
-                            class_name="invisible",
-                            type="button",
-                        ),
-                        dcc.Download(id="download-image"),
-                        html.Br(),
-                        # dbc.Card(
-                        #     [
-                        #        dbc.CardHeader(html.H4('¡Paciencia!', className='card-title text-center')),
-                        #        dbc.CardBody(
-                        #            [
-                        #                html.P('Puede que la primera predicción cuando se entra al sitio tarde varios segundos.', className='card-text')
-                        #            ]
-                        #        )
-                        #     ],
-                        #     id='wait-msg',
-                        #     color='warning',
-                        #     class_name='m-1 shadow-sm'
-                        # )
                     ],
                     lg={
                         "size": 2,
@@ -215,114 +195,126 @@ app.layout = dbc.Container(
             ],
             align="start",
         ),
+        # -------------------------------------------------------------
+        # NUEVA ZONA INFERIOR: Acordeón + Contexto (Consideraciones y Enlaces)
+        # -------------------------------------------------------------
+        dbc.Row(
+            dbc.Col(render_classes_accordion(spiders_classes), width=12),
+            className="mx-2",
+        ),
         dbc.Row(
             [
+                # Tarjeta de Consideraciones (Izquierda)
                 dbc.Col(
                     dbc.Card(
                         [
                             dbc.CardHeader(
-                                html.H5("Consideraciones", className="card-title")
+                                [
+                                    html.I(className="bi bi-shield-exclamation me-2"),
+                                    "Consideraciones del Algoritmo",
+                                ],
+                                className="fw-bold bg-light",
                             ),
                             dbc.CardBody(
                                 [
-                                    html.P(
-                                        "El algoritmo fue ajustado usando fotografías de sólo 51 clases, "
-                                        "siendo este último término usado en forma general para distintos conceptos: "
-                                        "Orden, Familia, género y especie.",
-                                        className="card-text",
-                                    ),
-                                    html.P(
-                                        "El modelo entregará un resultado aún cuando las fotografías no correspondan a arácnidos.",
-                                        className="card-text",
-                                    ),
-                                    html.P(
-                                        "Por lo anterior, cualquier predicción realizada por el modelo al enviar una fotografía "
-                                        "estará limitada al alcance de las clases usadas en el ajuste.",
-                                        className="card-text text-warning",
-                                    ),
+                                    html.Ul(
+                                        [
+                                            html.Li(
+                                                "El algoritmo fue ajustado usando fotografías de sólo 51 clases (Orden, Familia, Género y Especie).",
+                                                className="mb-2",
+                                            ),
+                                            html.Li(
+                                                "El modelo entregará un resultado aproximado aún cuando las fotografías no correspondan a arácnidos.",
+                                                className="mb-2",
+                                            ),
+                                            html.Li(
+                                                "Cualquier predicción estará limitada estrictamente al catálogo de clases registradas.",
+                                                className="text-danger fw-bold",
+                                            ),
+                                        ],
+                                        className="card-text small mb-0",
+                                    )
                                 ],
                             ),
                         ],
-                        className="m-2 mt-2 shadow-sm",
+                        className="shadow-sm h-100",
                     ),
-                    width={"size": 4},
-                    md={"size": 3, "offset": 1, "order": "first"},
-                    sm={"size": 10, "offset": 1, "order": "first"},
-                    xs={"size": 10, "offset": 1, "order": "first"},
+                    md=6,
+                    xs=12,
+                    className="mb-3",
                 ),
+                # Tarjeta de Enlaces Externos (Derecha)
                 dbc.Col(
                     dbc.Card(
                         [
                             dbc.CardHeader(
-                                html.H5(
-                                    "Clases de ajuste del algoritmo",
-                                    className="card-title",
-                                )
+                                [
+                                    html.I(className="bi bi-link-45deg me-2"),
+                                    "Enlaces Externos de Interés",
+                                ],
+                                className="fw-bold bg-light",
                             ),
                             dbc.CardBody(
-                                html.P(
-                                    ", ".join(
+                                [
+                                    html.Div(
                                         [
-                                            name.replace("_", "")
-                                            for name in spiders_classes["train_classes"]
-                                            if name != not_used_class_names
+                                            html.A(
+                                                [
+                                                    html.I(
+                                                        className="bi bi-facebook text-primary me-2"
+                                                    ),
+                                                    "Grupo de Facebook de Arañas de Chile",
+                                                ],
+                                                href="https://www.facebook.com/groups/aranasdechile",
+                                                target="_blank",
+                                                className="d-block mb-3 text-decoration-none text-dark",
+                                            ),
+                                            html.A(
+                                                [
+                                                    html.I(
+                                                        className="bi bi-instagram text-danger me-2"
+                                                    ),
+                                                    "Instagram Arañas de Chile",
+                                                ],
+                                                href="https://www.instagram.com/aranas_de_chile/",
+                                                target="_blank",
+                                                className="d-block mb-3 text-decoration-none text-dark",
+                                            ),
+                                            html.A(
+                                                [
+                                                    html.I(
+                                                        className="bi bi-facebook text-primary me-2"
+                                                    ),
+                                                    "Grupo de Facebook de Tarántulas de Chile",
+                                                ],
+                                                href="https://www.facebook.com/groups/276206972846798",
+                                                target="_blank",
+                                                className="d-block mb-3 text-decoration-none text-dark",
+                                            ),
+                                            html.A(
+                                                [
+                                                    html.I(
+                                                        className="bi bi-book text-success me-2"
+                                                    ),
+                                                    "Guía de Tarántulas Chilenas",
+                                                ],
+                                                href="https://tarantulas-chilenas.wixsite.com/home",
+                                                target="_blank",
+                                                className="d-block text-decoration-none text-dark",
+                                            ),
                                         ]
-                                    ),
-                                    className="card-text",
-                                )
+                                    )
+                                ]
                             ),
                         ],
-                        className="m-2 mt-2 shadow-sm",
+                        className="shadow-sm h-100",
                     ),
-                    width={"size": 4},
-                    md={"size": 4, "offset": 0, "order": 2},
-                    sm={"size": 10, "offset": 1, "order": 2},
-                    xs={"size": 10, "offset": 1, "order": 2},
+                    md=6,
+                    xs=12,
+                    className="mb-3",
                 ),
-                dbc.Col(
-                    [
-                        dbc.Card(
-                            [
-                                dbc.CardHeader(
-                                    html.H5("Enlaces externos", className="card-title")
-                                ),
-                                dbc.CardBody(
-                                    [
-                                        html.A(
-                                            "Grupo de Facebook de Arañas de Chile",
-                                            disable_n_clicks=True,
-                                            href="https://www.facebook.com/groups/aranasdechile",
-                                            className="d-sm-block",
-                                        ),
-                                        html.A(
-                                            "Instagram Arañas de Chile",
-                                            disable_n_clicks=True,
-                                            href="https://www.instagram.com/aranas_de_chile/",
-                                            className="d-sm-block",
-                                        ),
-                                        html.A(
-                                            "Grupo de Facebook de Tarántulas de Chile",
-                                            disable_n_clicks=True,
-                                            href="https://www.facebook.com/groups/276206972846798",
-                                            className="d-sm-block",
-                                        ),
-                                        html.A(
-                                            "Guía de Tarántulas Chilenas",
-                                            disable_n_clicks=True,
-                                            href="https://tarantulas-chilenas.wixsite.com/home",
-                                            className="d-sm-block",
-                                        ),
-                                    ]
-                                ),
-                            ],
-                            className="m-2 mt-2 shadow-sm",
-                        )
-                    ],
-                    md={"size": 3, "offset": 0, "order": "last"},
-                    sm={"size": 10, "offset": 1, "order": "last"},
-                    xs={"size": 10, "offset": 1, "order": "last"},
-                ),
-            ]
+            ],
+            className="mx-2 mb-4 align-items-stretch",  # Alinea las tarjetas para que tengan la misma altura
         ),
         dbc.Row(
             [
@@ -378,9 +370,9 @@ app.layout = dbc.Container(
 
 
 @app.callback(
-    Output("result-container", "children"),  # Ahora actualizamos todo el contenedor
+    Output("result-container", "children"),
     Output("imgs-idx-store", "data"),
-    Output("img-button", "class_name"),
+    Output("pred-store", "data"),
     Input("pic-upload-1", "contents"),
 )
 def send_image(contents):
@@ -398,53 +390,60 @@ def send_image(contents):
                 nearest_neighbors = ", ".join(
                     [name for name in response_dict["nearest_neighbors"][:n_neighbors]]
                 )
-
-                # --- NUEVA LÓGICA: Construir la tarjeta de resultado ---
                 file_name = utils.infographics_dict.get(nearest_neighbors, None)
-                download_button_class_name = (
-                    "visible d-grid gap-2 col-6 mx-auto shadow"
-                    if file_name
-                    else "invisible"
-                )
-
-                # Determinar qué imagen mostrar (reutilizando tu lógica de refresh_infographic)
                 if file_name:
                     img_src = str(infographics_path / file_name)
+                    # Si hay afiche, creamos el botón de descarga aquí mismo
+                    download_btn = html.Div(
+                        [
+                            dbc.Button(
+                                [
+                                    html.I(className="bi bi-download me-2"),
+                                    "Descargar afiche",
+                                ],
+                                id="img-button",
+                                color="success",
+                                className="w-100 shadow-sm",
+                            ),
+                            dcc.Download(id="download-image"),
+                        ],
+                        className="mt-3",
+                    )
                 else:
                     img_src = str(infographics_path / "no_afiche.png")
+                    download_btn = html.Div()  # Vacío si no hay afiche
 
+                # Construir la tarjeta de resultado
                 result_card = dbc.Card(
                     [
                         dbc.CardHeader(
                             html.H4(
                                 f"Sugerencia de identificación: {nearest_neighbors}",
-                                className="card-title text-white",
+                                className="card-title text-white mb-0",
                             ),
                             className="bg-success",
                         ),
                         dbc.CardBody(
                             [
                                 dbc.CardImg(src=img_src, id="info-img"),
-                                dbc.CardFooter(
-                                    html.P(
-                                        "Todos los créditos al equipo de Arañas de Chile detallado en la parte inferior del afiche.",
-                                        className="card-text mb-0",
-                                    ),
-                                    className="mt-2",
-                                ),
+                                download_btn,  # Insertamos el botón debajo de la imagen
                             ]
+                        ),
+                        dbc.CardFooter(
+                            html.P(
+                                "Todos los créditos al equipo de Arañas de Chile detallado en la parte inferior del afiche.",
+                                className="card-text mb-0 text-muted small",
+                            ),
                         ),
                     ],
                     className="m-1 shadow-sm",
                 )
 
-                return (
-                    result_card,
-                    response_dict["nearest_imgs_idx"],
-                    download_button_class_name,
-                )
+                # Retornamos la tarjeta, la ID de imágenes, y la PREDICCIÓN LIMPIA para el Store
+                return result_card, response_dict["nearest_imgs_idx"], nearest_neighbors
+
+            # ... (Manejo de errores `else` y `except` sin cambios, pero retornando `no_update` para el pred-store) ...
             else:
-                # Manejo de error: Archivo no válido
                 error_card = dbc.Card(
                     [
                         dbc.CardHeader(
@@ -456,7 +455,6 @@ def send_image(contents):
                     className="m-1 shadow-sm",
                 )
                 return error_card, no_update, no_update
-
         except Exception as e:
             print(e)
             error_card = dbc.Card(
@@ -465,19 +463,13 @@ def send_image(contents):
                         html.H4("Error", className="card-title text-white"),
                         className="bg-danger",
                     ),
-                    dbc.CardBody(
-                        html.P(
-                            "Hubo un problema al procesar la imagen, vuelve a intentar con un archivo de imagen válido."
-                        )
-                    ),
+                    dbc.CardBody(html.P("Hubo un problema al procesar la imagen.")),
                 ],
                 className="m-1 shadow-sm",
             )
             return error_card, no_update, no_update
-
     else:
-        # Si no hay contenido (carga inicial), devolvemos el Empty State
-        return initial_empty_state(), no_update, "invisible"
+        return initial_empty_state(), no_update, no_update
 
 
 about_classifications_text = "Tener presente que la clasificación puede ser desacertada. Considerar con precaución."
@@ -518,21 +510,16 @@ def get_nearest_imgs(timestamp, data):
 @app.callback(
     Output("download-image", "data"),
     Input("img-button", "n_clicks"),
-    State("info-img-title", "children"),
+    State("pred-store", "data"),
     prevent_initial_call=True,
 )
-def download_infographic(n_clicks, pred):
-    # 'Afiche aleatorio'
-    if "Sugerencia de clase:" in pred:
-        first_pred = pred.partition(": ")[2]
-        file_name = utils.infographics_dict.get(first_pred, None)
+def download_infographic(n_clicks, pred_name):
+    if pred_name:
+        file_name = utils.infographics_dict.get(pred_name, None)
         if file_name:
             path_file = infographics_path / file_name
             return dcc.send_file(path_file)
-        else:
-            no_update
-    else:
-        no_update
+    return no_update
 
 
 if __name__ == "__main__":
