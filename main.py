@@ -94,7 +94,8 @@ app.layout = dbc.Container(
                     )
                 ],
                 width=12,
-            )
+            ),
+            className="mb-1",
         ),
         dbc.Row(
             [
@@ -105,13 +106,13 @@ app.layout = dbc.Container(
                         color="#0d6efd",
                         children=upload_component,
                     ),
-                    width={"size": 10, "offset": 1},
-                    md={"size": 10, "offset": 1},
+                    width={"size": 6},
+                    md={"size": 6},
                     xs={"size": 12, "offset": 0},
                 )
             ],
             justify="around",
-            className="mb-4",
+            className="mb-4 mt-2",
         ),
         dbc.Row(
             [
